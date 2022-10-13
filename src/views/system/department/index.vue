@@ -48,6 +48,7 @@
           labelWidth: 120,
           schemas: searchFormSchema,
         },
+        rowKey: 'id',
         pagination: false,
         striped: false,
         useSearchForm: true,

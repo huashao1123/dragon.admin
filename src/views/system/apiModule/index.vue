@@ -40,7 +40,7 @@
     components: { BasicTable, TableAction, ApiModal },
     setup() {
       const [registModal, { openModal }] = useModal();
-      const [registerTable, { reload, updateTableDataRecord }] = useTable({
+      const [registerTable, { reload, updateTableDataRecord, deleteTableDataRecord }] = useTable({
         title: 'api接口列表', //页面
         api: getApiList,
         columns, //列表
@@ -52,6 +52,7 @@
         bordered: true,
         showIndexColumn: false,
         canResize: false,
+        rowKey: 'id',
         actionColumn: {
           width: 80,
           title: '操作',
@@ -78,8 +79,8 @@
         console.log(id);
         const msg = await DeleteApi(id);
         if (msg) {
+          deleteTableDataRecord(id);
           createMessage.success('删除成功');
-          reload();
         }
       }
       function handleSuccess({ isUpdate, values }) {

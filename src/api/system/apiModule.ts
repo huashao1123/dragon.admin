@@ -3,9 +3,9 @@ import { defHttp } from '/@/utils/http/axios';
 
 enum api {
   apiList = '/getapilist',
-  addApi = '/addapimoule',
-  updateApi = '/updateApiMoule',
-  deleteApi = '/deleteApiMoule',
+  addApi = '/addapimodule',
+  updateApi = '/updateApiModule',
+  deleteApi = '/deleteApiModule',
 }
 
 export const getApiList = (params?: apiListItem) =>

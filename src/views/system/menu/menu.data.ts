@@ -41,7 +41,7 @@ export const columns: BasicColumn[] = [
   {
     title: '权限标识',
     dataIndex: 'permission',
-    width: 80,
+    width: 150,
   },
   {
     title: 'API接口名称',
@@ -62,6 +62,7 @@ export const columns: BasicColumn[] = [
   {
     title: '状态',
     dataIndex: 'status',
+    width: 80,
     customRender: ({ record }) => {
       const status = record.status;
       const enable = ~~status === 0;
@@ -146,6 +147,8 @@ export const formSchema: FormSchema[] = [
     label: '名称',
     component: 'Input',
     colProps: { span: 8 },
+    required: true,
+    ifShow: ({ values }) => !isButton(values.menuType),
   },
   {
     field: 'pid',
@@ -258,7 +261,7 @@ export const formSchema: FormSchema[] = [
       valueField: 'id',
       labelInValue: true,
     },
-    required: ({ values }) => isButton(values.menuType),
+    required: true,
     ifShow: ({ values }) => !isDir(values.menuType),
   },
 ];
