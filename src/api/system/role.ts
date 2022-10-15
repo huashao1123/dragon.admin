@@ -27,7 +27,7 @@ export const UpdateRole = (params: RoleListItem) =>
   defHttp.put<boolean>({ url: Api.UpdateRole, params });
 export const DleteRole = (params: string) =>
   defHttp.delete<boolean>({ url: Api.DleteRole, params });
-export const setRoleStatus = (id: number, status: string) =>
+export const setRoleStatus = (id: number, status: string | number) =>
   defHttp.post<boolean>({ url: Api.setRoleStatus, params: { id, status } });
 //// 获取角色拥有机构列表(数据范围)
 export const ownDeptList = (id: number) =>

@@ -1,7 +1,7 @@
 import { BasicColumn } from '/@/components/Table';
 import { FormSchema } from '/@/components/Table';
 import { h } from 'vue';
-import { Switch } from 'ant-design-vue';
+import { Switch, Tag } from 'ant-design-vue';
 import { setRoleStatus } from '/@/api/system/role';
 import { useMessage } from '/@/hooks/web/useMessage';
 
@@ -30,13 +30,13 @@ export const columns: BasicColumn[] = [
         record.pendingStatus = false;
       }
       return h(Switch, {
-        checked: record.status === '1',
+        checked: record.status === 0,
         checkedChildren: '已启用',
         unCheckedChildren: '已禁用',
         loading: record.pendingStatus,
         onChange(checked: boolean) {
           record.pendingStatus = true;
-          const newStatus = checked ? '1' : '0';
+          const newStatus = checked ? 0 : 1;
           const { createMessage } = useMessage();
           setRoleStatus(record.id, newStatus)
             .then(() => {
@@ -51,6 +51,27 @@ export const columns: BasicColumn[] = [
             });
         },
       });
+    },
+  },
+  {
+    title: '数据范围',
+    dataIndex: 'dataScope',
+    width: 200,
+    customRender: ({ record }) => {
+      const dataScope = record.dataScope;
+      switch (dataScope) {
+        case 1:
+          return h(Tag, { color: 'orange' }, () => '全部数据');
+        case 2:
+          return h(Tag, { color: 'orange' }, () => '本部门及以下');
+        case 3:
+          return h(Tag, { color: 'orange' }, () => '本部门数据');
+        case 4:
+          return h(Tag, { color: 'orange' }, () => '仅本人数据');
+        case 5:
+          return h(Tag, { color: 'orange' }, () => '自定义数据');
+      }
+      return dataScope;
     },
   },
   {
@@ -77,8 +98,8 @@ export const searchFormSchema: FormSchema[] = [
     component: 'Select',
     componentProps: {
       options: [
-        { label: '启用', value: '0' },
-        { label: '停用', value: '1' },
+        { label: '启用', value: 0 },
+        { label: '停用', value: 1 },
       ],
     },
     colProps: { span: 8 },
@@ -91,12 +112,14 @@ export const formSchema: FormSchema[] = [
     label: '角色名称',
     required: true,
     component: 'Input',
+    colProps: { span: 24 },
   },
   {
     field: 'code',
     label: '角色值',
     required: true,
     component: 'Input',
+    colProps: { span: 24 },
   },
   {
     field: 'status',
@@ -105,15 +128,17 @@ export const formSchema: FormSchema[] = [
     defaultValue: '0',
     componentProps: {
       options: [
-        { label: '启用', value: '0' },
-        { label: '停用', value: '1' },
+        { label: '启用', value: 0 },
+        { label: '停用', value: 1 },
       ],
     },
+    colProps: { span: 24 },
   },
   {
     label: '备注',
     field: 'remark',
     component: 'InputTextArea',
+    colProps: { span: 24 },
   },
   // {
   //   label: ' ',

@@ -18,7 +18,7 @@ export interface RoleListItem {
 
 export interface RoleDeptInput {
   id: string | number;
-  datascope: number;
+  dataScope: number;
   deptIdList: number[];
 }
 
