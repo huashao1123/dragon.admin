@@ -5,6 +5,7 @@ import {
   RolePageListGetResultModel,
   RoleDeptInput,
   RoleMenuInPut,
+  roleInfo,
 } from './model/roleModel';
 
 enum Api {
@@ -17,6 +18,7 @@ enum Api {
   grantRoleData = '/sysrole/grantDept',
   ownMenuList = '/sysRole/ownmenu',
   grantRoleMenu = '/sysrole/grantmenu',
+  getRoleList = '/sysrole/list',
 }
 
 export const GetRolePageList = (params?: RolePageParams) =>
@@ -40,3 +42,6 @@ export const ownMenuList = (id: number) =>
   defHttp.get<any>({ url: Api.ownMenuList, params: { id } });
 export const grantRoleMenu = (params: RoleMenuInPut) =>
   defHttp.post<boolean>({ url: Api.grantRoleMenu, params });
+
+export const getRoleList = (params?: any) =>
+  defHttp.get<roleInfo[]>({ url: Api.getRoleList, params });

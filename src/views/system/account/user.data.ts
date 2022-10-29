@@ -4,7 +4,7 @@ import { h } from 'vue';
 import { Switch, Tag } from 'ant-design-vue';
 import { setUserStatus } from '/@/api/system/user';
 import { useMessage } from '/@/hooks/web/useMessage';
-import { getDeptList } from '/@/api/demo/system';
+import { getDeptList } from '/@/api/system/dept';
 
 export const columns: BasicColumn[] = [
   {
@@ -118,7 +118,7 @@ export const formSchema: FormSchema[] = [
   },
   {
     field: 'account',
-    label: '昵称',
+    label: '工号',
     component: 'Input',
     required: true,
     colProps: { span: 12 },
@@ -127,6 +127,7 @@ export const formSchema: FormSchema[] = [
     field: 'sex',
     label: '性别',
     component: 'RadioGroup',
+    defaultValue: true,
     colProps: { span: 12 },
     componentProps: {
       options: [
@@ -158,6 +159,7 @@ export const formSchema: FormSchema[] = [
     field: 'DepartmentId',
     label: '所属机构',
     component: 'ApiTreeSelect',
+    defaultValue: 0,
     componentProps: {
       api: getDeptList,
       fieldNames: {

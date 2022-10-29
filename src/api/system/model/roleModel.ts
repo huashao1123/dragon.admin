@@ -26,6 +26,11 @@ export interface RoleMenuInPut {
   id: string | number;
   menuIdList: number[];
 }
+export interface roleInfo {
+  id: string | number;
+  name: string;
+  code: string;
+}
 
 export type RolePageListGetResultModel = BasicFetchResult<RoleListItem>;
 
