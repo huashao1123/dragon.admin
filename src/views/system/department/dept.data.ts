@@ -85,9 +85,7 @@ export const formSchema: FormSchema[] = [
     field: 'code',
     label: '部门编码',
     component: 'Input',
-    ifShow: ({ values }) => {
-      return values.pid == 0;
-    },
+    required: true,
     colProps: { span: 24 },
   },
   {
