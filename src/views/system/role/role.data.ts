@@ -4,6 +4,8 @@ import { h } from 'vue';
 import { Switch, Tag } from 'ant-design-vue';
 import { setRoleStatus } from '/@/api/system/role';
 import { useMessage } from '/@/hooks/web/useMessage';
+import { usePermission } from '/@/hooks/web/usePermission';
+const { hasPermission } = usePermission();
 
 export const columns: BasicColumn[] = [
   {
@@ -34,6 +36,7 @@ export const columns: BasicColumn[] = [
         checkedChildren: '已启用',
         unCheckedChildren: '已禁用',
         loading: record.pendingStatus,
+        disabled: !hasPermission('sysrole:setStatus'),
         onChange(checked: boolean) {
           record.pendingStatus = true;
           const newStatus = checked ? 0 : 1;

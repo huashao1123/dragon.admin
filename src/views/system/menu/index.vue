@@ -3,7 +3,9 @@
     <BasicTable @register="registerTable" @fetch-success="onFetchSuccess">
       <template #toolbar>
         <!-- ///:disabled="!hasPermission('sysMenu:add')" -->
-        <a-button type="primary" @click="handleCreate"> 新增菜单 </a-button>
+        <a-button type="primary" @click="handleCreate" v-if="hasPermission('sysMenu:add')">
+          新增菜单
+        </a-button>
       </template>
       <template #action="{ record }">
         <TableAction
@@ -11,14 +13,14 @@
             {
               icon: 'clarity:note-edit-line',
               label: '编辑',
-              //disabled: !hasPermission('sysMenu:update'),
+              ifShow: hasPermission('sysMenu:update'),
               onClick: handleEdit.bind(null, record),
             },
             {
               icon: 'ant-design:delete-outlined',
               label: '删除',
               color: 'error',
-              //ifShow: hasPermission('sysMenu:delete'),
+              ifShow: hasPermission('sysMenu:delete'),
               popConfirm: {
                 title: '是否确认删除',
                 confirm: handleDelete.bind(null, record),
@@ -38,11 +40,12 @@
   import MenuDrawer from './menuDrawer.vue';
   import { columns, searchFormSchema } from './menu.data';
   import { getMenuList, DeleteMenu } from '/@/api/system/menu';
-  //import { usePermission } from '/@/hooks/web/usePermission';
+  import { usePermission } from '/@/hooks/web/usePermission';
   export default defineComponent({
     name: 'MenuManage',
     components: { BasicTable, MenuDrawer, TableAction },
     setup() {
+      const { hasPermission } = usePermission();
       const [registerDrawer, { openDrawer }] = useDrawer();
       const [registerTable, { reload, updateTableDataRecord }] = useTable({
         title: '菜单列表',
@@ -99,7 +102,7 @@
 
       function onFetchSuccess() {
         // // 默认展开所有表项
-        // nextTick(expandAll)
+        //nextTick(expandAll);
       }
 
       return {
@@ -110,7 +113,7 @@
         handleDelete,
         handleSuccess,
         onFetchSuccess,
-        //hasPermission,
+        hasPermission,
       };
     },
   });

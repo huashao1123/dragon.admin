@@ -2,18 +2,22 @@
   <div>
     <BasicTable @register="registerTable">
       <template #toolbar>
-        <a-button type="primary" @click="handleCreate">新增API接口</a-button>
+        <a-button type="primary" @click="handleCreate" v-if="hasPermission('sysapi:add')"
+          >新增API接口</a-button
+        >
       </template>
       <template #action="{ record }">
         <TableAction
           :actions="[
             {
               icon: 'clarity:note-edit-line',
+              ifShow: hasPermission('sysapi:update'),
               onClick: handleEdit.bind(null, record),
             },
             {
               icon: 'ant-design:delete-outlined',
               color: 'error',
+              ifShow: hasPermission('sysapi:delete'),
               popConfirm: {
                 title: '是否确认删除',
                 confirm: handleDelete.bind(null, record),
@@ -35,10 +39,13 @@
   import { useMessage } from '/@/hooks/web/useMessage';
   const { createMessage } = useMessage();
   import { getApiList, DeleteApi } from '/@/api/system/apiModule';
+  import { usePermission } from '/@/hooks/web/usePermission';
+
   export default defineComponent({
     name: 'ApiModule',
     components: { BasicTable, TableAction, ApiModal },
     setup() {
+      const { hasPermission } = usePermission();
       const [registModal, { openModal }] = useModal();
       const [registerTable, { reload, updateTableDataRecord, deleteTableDataRecord }] = useTable({
         title: 'api接口列表', //页面
@@ -97,6 +104,7 @@
         handleDelete,
         handleSuccess,
         registModal,
+        hasPermission,
       };
     },
   });

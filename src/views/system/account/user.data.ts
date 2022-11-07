@@ -5,6 +5,9 @@ import { Switch, Tag } from 'ant-design-vue';
 import { setUserStatus } from '/@/api/system/user';
 import { useMessage } from '/@/hooks/web/useMessage';
 import { getDeptList } from '/@/api/system/dept';
+import { usePermission } from '/@/hooks/web/usePermission';
+
+const { hasPermission } = usePermission();
 
 export const columns: BasicColumn[] = [
   {
@@ -62,7 +65,7 @@ export const columns: BasicColumn[] = [
         checked: record.status === 0,
         checkedChildren: '已启用',
         unCheckedChildren: '已禁用',
-        //disabled: !hasPermission('sysUser:setStatus'),
+        disabled: !hasPermission('sysUser:setStatus'),
         loading: record.pendingStatus,
         onChange(checked: boolean) {
           record.pendingStatus = true;

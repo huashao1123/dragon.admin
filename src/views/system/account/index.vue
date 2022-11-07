@@ -4,7 +4,9 @@
     <BasicTable @register="registerTable" class="w-3/4 xl:w-4/5" :searchInfo="searchInfo">
       <template #toolbar>
         <!-- :disabled="!hasPermission('sysUser:add')" -->
-        <a-button type="primary" @click="handleCreate">新增账号</a-button>
+        <a-button type="primary" @click="handleCreate" v-if="!hasPermission('sysuser:add')"
+          >新增账号</a-button
+        >
       </template>
       <template #avatar="{ record }">
         <Avatar :size="60" :src="record.avatar" />
@@ -16,7 +18,7 @@
               icon: 'clarity:note-edit-line',
               label: '编辑',
               tooltip: '编辑账号',
-              //disabled: !hasPermission('sysUser:update'),
+              ifShow: !hasPermission('sysuser:update'),
               onClick: handleEdit.bind(null, record),
             },
           ]"
@@ -24,13 +26,13 @@
             {
               icon: 'ant-design:menu-outlined',
               label: '授权角色',
-              //disabled: !hasPermission('sysUser:grantRole'),
+              ifShow: !hasPermission('sysuser:grantrole'),
               onClick: handleGrantRole.bind(null, record),
             },
             {
               icon: 'ant-design:database-outlined',
               label: '授权数据',
-              ////disabled: !hasPermission('sysUser:grantData'),
+              ifShow: !hasPermission('sysuser:grantdept'),
               onClick: handleGrantData.bind(null, record),
             },
             // {
@@ -46,7 +48,7 @@
               icon: 'ant-design:delete-outlined',
               color: 'error',
               label: '删除账号',
-              //ifShow: hasPermission('sysUser:delete'),
+              ifShow: hasPermission('sysuser:delete'),
               popConfirm: {
                 title: '是否确认删除',
                 confirm: handleDelete.bind(null, record),

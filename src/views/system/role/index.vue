@@ -3,7 +3,9 @@
     <BasicTable @register="registerTable">
       <template #toolbar>
         <!--  :disabled="!hasPermission('sysRole:add')" -->
-        <a-button type="primary" @click="handleCreate"> 新增角色 </a-button>
+        <a-button type="primary" @click="handleCreate" v-if="hasPermission('sysrole:add')">
+          新增角色
+        </a-button>
       </template>
       <template #action="{ record }">
         <TableAction
@@ -11,6 +13,7 @@
             {
               icon: 'clarity:note-edit-line',
               label: '编辑',
+              ifShow: hasPermission('sysrole:update'),
               onClick: handleEdit.bind(null, record),
             },
           ]"
@@ -18,17 +21,20 @@
             {
               icon: 'ant-design:menu-outlined',
               label: '授权菜单',
+              ifShow: hasPermission('sysrole:grantMenu'),
               onClick: handleGrantMenu.bind(null, record),
             },
             {
               icon: 'ant-design:database-outlined',
               label: '授权数据',
+              ifShow: hasPermission('sysrole:grantData'),
               onClick: handleGrantData.bind(null, record),
             },
             {
               icon: 'ant-design:delete-outlined',
               color: 'error',
               label: '删除',
+              ifShow: hasPermission('sysrole:delete'),
               popConfirm: {
                 title: '是否确认删除',
                 confirm: handleDelete.bind(null, record),
@@ -47,7 +53,7 @@
   import { defineComponent } from 'vue';
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { useDrawer } from '/@/components/Drawer';
-  // import { usePermission } from '/@/hooks/web/usePermission';
+  import { usePermission } from '/@/hooks/web/usePermission';
 
   import RoleDrawer from './RoleDrawer.vue';
   import GrantMenuDrawer from './GrantMenuDrawer.vue';
@@ -66,7 +72,7 @@
       GrantDataDrawer,
     },
     setup() {
-      // const { hasPermission } = usePermission();
+      const { hasPermission } = usePermission();
       const [registerDrawer, { openDrawer }] = useDrawer();
       const [registerGrantMenuDrawer, { openDrawer: openGrantMenuDrawer }] = useDrawer();
       const [registerGrantDataDrawer, { openDrawer: openGrantDataDrawer }] = useDrawer();
@@ -137,7 +143,7 @@
         handleSuccess,
         handleGrantMenu,
         handleGrantData,
-        // hasPermission,
+        hasPermission,
       };
     },
   });

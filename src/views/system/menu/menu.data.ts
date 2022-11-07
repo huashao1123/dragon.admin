@@ -204,12 +204,14 @@ export const formSchema: FormSchema[] = [
     field: 'component',
     label: '组件路径',
     component: 'Input',
+    required: true,
     ifShow: ({ values }) => !isButton(values.menuType),
   },
   {
     field: 'redirect',
     label: '跳转地址',
     component: 'Input',
+    required: true,
     ifShow: ({ values }) => isDir(values.menuType),
   },
   {

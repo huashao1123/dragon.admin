@@ -2,18 +2,22 @@
   <div>
     <BasicTable @register="registerTable">
       <template #toolbar>
-        <a-button type="primary" @click="handleCreate">新增部门</a-button>
+        <a-button type="primary" @click="handleCreate" v-if="hasPermission('sysdept:add')"
+          >新增部门</a-button
+        >
       </template>
       <template #action="{ record }">
         <TableAction
           :actions="[
             {
               icon: 'clarity:note-edit-line',
+              ifShow: hasPermission('sysdept:update'),
               onClick: handleEdit.bind(null, record),
             },
             {
               icon: 'ant-design:delete-outlined',
               color: 'error',
+              ifShow: hasPermission('sysdept:delete'),
               popConfirm: {
                 title: '是否确认删除',
                 confirm: handleDelete.bind(null, record),
@@ -34,12 +38,14 @@
   import OrgModal from './deptModal.vue';
   import { useModal } from '/@/components/Modal';
   import { useMessage } from '/@/hooks/web/useMessage';
+  import { usePermission } from '/@/hooks/web/usePermission';
   const { createMessage } = useMessage();
   export default defineComponent({
     name: 'OrgManagement',
     components: { BasicTable, TableAction, OrgModal },
     setup() {
       const [registModal, { openModal }] = useModal();
+      const { hasPermission } = usePermission();
       const [registerTable, { reload, updateTableDataRecord }] = useTable({
         title: '部门列表',
         api: getDeptList,
@@ -100,6 +106,7 @@
         handleDelete,
         handleSuccess,
         registModal,
+        hasPermission,
       };
     },
   });
