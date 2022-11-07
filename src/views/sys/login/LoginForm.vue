@@ -24,6 +24,15 @@
         :placeholder="t('sys.login.password')"
       />
     </FormItem>
+    <FormItem name="verify" class="enter-x">
+      <BasicDragVerify
+        @success="handleVerifySuccess"
+        size="large"
+        class="fix-auto-fill"
+        :successText="successText"
+        text="请进行滑动验证"
+      />
+    </FormItem>
 
     <ARow class="enter-x">
       <ACol :span="12">
@@ -34,14 +43,13 @@
           </Checkbox>
         </FormItem>
       </ACol>
-      <ACol :span="12">
+      <!-- <ACol :span="12">
         <FormItem :style="{ 'text-align': 'right' }">
-          <!-- No logic, you need to deal with it yourself -->
           <Button type="link" size="small" @click="setLoginState(LoginStateEnum.RESET_PASSWORD)">
             {{ t('sys.login.forgetPassword') }}
           </Button>
         </FormItem>
-      </ACol>
+      </ACol> -->
     </ARow>
 
     <FormItem class="enter-x">
@@ -52,7 +60,7 @@
         {{ t('sys.login.registerButton') }}
       </Button> -->
     </FormItem>
-    <ARow class="enter-x">
+    <!-- <ARow class="enter-x">
       <ACol :md="8" :xs="24">
         <Button block @click="setLoginState(LoginStateEnum.MOBILE)">
           {{ t('sys.login.mobileSignInFormTitle') }}
@@ -78,20 +86,20 @@
       <AlipayCircleFilled />
       <GoogleCircleFilled />
       <TwitterCircleFilled />
-    </div>
+    </div> -->
   </Form>
 </template>
 <script lang="ts" setup>
-  import { reactive, ref, unref, computed } from 'vue';
+  import { reactive, ref, unref, computed, onMounted } from 'vue';
 
-  import { Checkbox, Form, Input, Row, Col, Button, Divider } from 'ant-design-vue';
-  import {
-    GithubFilled,
-    WechatFilled,
-    AlipayCircleFilled,
-    GoogleCircleFilled,
-    TwitterCircleFilled,
-  } from '@ant-design/icons-vue';
+  import { Checkbox, Form, Input, Row, Col, Button } from 'ant-design-vue';
+  // import {
+  //   GithubFilled,
+  //   WechatFilled,
+  //   AlipayCircleFilled,
+  //   GoogleCircleFilled,
+  //   TwitterCircleFilled,
+  // } from '@ant-design/icons-vue';
   import LoginFormTitle from './LoginFormTitle.vue';
 
   import { useI18n } from '/@/hooks/web/useI18n';
@@ -100,6 +108,8 @@
   import { useUserStore } from '/@/store/modules/user';
   import { LoginStateEnum, useLoginState, useFormRules, useFormValid } from './useLogin';
   import { useDesign } from '/@/hooks/web/useDesign';
+  import { createLocalStorage } from '/@/utils/cache';
+  import { BasicDragVerify, PassingData } from '/@/components/Verify/index';
   //import { onKeyStroke } from '@vueuse/core';
 
   const ACol = Col;
@@ -111,27 +121,52 @@
   const { prefixCls } = useDesign('login');
   const userStore = useUserStore();
 
-  const { setLoginState, getLoginState } = useLoginState();
+  const { getLoginState } = useLoginState();
   const { getFormRules } = useFormRules();
 
   const formRef = ref();
   const loading = ref(false);
   const rememberMe = ref(false);
+  const ls = createLocalStorage();
 
   const formData = reactive({
-    account: 'vben',
-    password: '123456',
+    account: '',
+    password: '',
   });
 
   const { validForm } = useFormValid(formRef);
-
+  const userKey = 'userId';
   //onKeyStroke('Enter', handleLogin);
 
   const getShow = computed(() => unref(getLoginState) === LoginStateEnum.LOGIN);
-
+  onMounted(() => {
+    const userName = ls.get(userKey) as string;
+    if (userName) {
+      formData.account = userName;
+      rememberMe.value = true;
+    }
+  });
+  let verifyPass = false;
+  const successText = ref('验证通过');
+  function handleVerifySuccess(data: PassingData) {
+    const { time } = data;
+    successText.value = `校验成功,耗时${time}秒`;
+    verifyPass = true;
+  }
   async function handleLogin() {
     const data = await validForm();
     if (!data) return;
+    if (!verifyPass) {
+      createErrorModal({
+        title: t('sys.api.errorTip'),
+        content: '请进行滑动验证',
+      });
+      return;
+    }
+    ls.remove(userKey);
+    if (rememberMe.value) {
+      ls.set(userKey, formData.account, 360 * 360);
+    }
     try {
       loading.value = true;
       const userInfo = await userStore.login({
