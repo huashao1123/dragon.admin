@@ -37,6 +37,7 @@
   import { useI18n } from '/@/hooks/web/useI18n';
 
   export default defineComponent({
+    name: 'CustomUpload',
     components: { Upload, Alert, FileList },
     props: {
       ...basicProps,
