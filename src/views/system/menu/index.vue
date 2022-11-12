@@ -3,7 +3,7 @@
     <BasicTable @register="registerTable" @fetch-success="onFetchSuccess">
       <template #toolbar>
         <!-- ///:disabled="!hasPermission('sysMenu:add')" -->
-        <a-button type="primary" @click="handleCreate" v-if="hasPermission('sysMenu:add')">
+        <a-button type="primary" @click="handleCreate" v-if="hasPermission('sysmenu:add')">
           新增菜单
         </a-button>
       </template>
@@ -13,14 +13,14 @@
             {
               icon: 'clarity:note-edit-line',
               label: '编辑',
-              ifShow: hasPermission('sysMenu:update'),
+              ifShow: hasPermission('sysmenu:update'),
               onClick: handleEdit.bind(null, record),
             },
             {
               icon: 'ant-design:delete-outlined',
               label: '删除',
               color: 'error',
-              ifShow: hasPermission('sysMenu:delete'),
+              ifShow: hasPermission('sysmenu:delete'),
               popConfirm: {
                 title: '是否确认删除',
                 confirm: handleDelete.bind(null, record),

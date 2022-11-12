@@ -17,7 +17,7 @@
   <FileList :dataSource="fileListRef" :columns="columns" :actionColumn="actionColumn" />
 </template>
 <script lang="ts">
-  import { defineComponent, ref, toRefs, unref, PropType } from 'vue';
+  import { defineComponent, ref, toRefs, unref, PropType, watch, watchEffect } from 'vue';
   import { Upload, Alert } from 'ant-design-vue';
   //import { BasicModal, useModalInner } from '/@/components/Modal';
   //   import { BasicTable, useTable } from '/@/components/Table';
@@ -27,7 +27,7 @@
   //   types
   import { FileItem } from './typing';
   import { basicProps } from './props';
-  import { createTableColumns, createActionColumn } from './data';
+  import { createTableColumns, createActionColumn } from './customData';
   // utils
   import { checkImgType, getBase64WithFile } from './helper';
   import { buildUUID } from '/@/utils/uuid';
@@ -41,24 +41,25 @@
     components: { Upload, Alert, FileList },
     props: {
       ...basicProps,
-      previewFileList: {
-        type: Array as PropType<string[]>,
-        default: () => [],
+      closeState: {
+        type: Number as PropType<number>,
       },
     },
-    emits: ['delete'],
+    emits: ['delete', 'change'],
     setup(props, { emit }) {
-      // const state = reactive<{ fileList: FileItem[] }>({
-      //   fileList: [],
-      // });
-
-      //   是否正在上传
-      //const isUploadingRef = ref(false);
       const fileListRef = ref<FileItem[]>([]);
+      watch(
+        () => props.closeState,
+        (value = 0, oldValue = 0) => {
+          if (value > oldValue) {
+            fileListRef.value = [];
+          }
+        },
+      );
+
       const { accept, helpText, maxNumber, maxSize } = toRefs(props);
 
       const { t } = useI18n();
-      //const [register, { closeModal }] = useModalInner();
 
       const { getStringAccept, getHelpText } = useUploadType({
         acceptRef: accept,
@@ -68,13 +69,6 @@
       });
 
       const { createMessage } = useMessage();
-
-      // const getIsSelectFile = computed(() => {
-      //   return (
-      //     fileListRef.value.length > 0 &&
-      //     !fileListRef.value.every((item) => item.status === UploadResultStatus.SUCCESS)
-      //   );
-      // });
 
       // const getOkButtonProps = computed(() => {
       //   const someSuccess = fileListRef.value.some(
@@ -130,6 +124,7 @@
         } else {
           fileListRef.value = [...unref(fileListRef), commonItem];
         }
+        emit('change', fileListRef.value);
         return false;
       }
 
@@ -138,8 +133,12 @@
         const index = fileListRef.value.findIndex((item) => item.uuid === record.uuid);
         index !== -1 && fileListRef.value.splice(index, 1);
         emit('delete', record);
+        emit('change', fileListRef.value);
       }
 
+      function handlePreview(record: FileItem) {
+        console.log(record.name);
+      }
       // async function uploadApiByItem(item: FileItem) {
       //   const { api } = props;
       //   if (!api || !isFunction(api)) {
@@ -243,7 +242,7 @@
 
       return {
         columns: createTableColumns() as any[],
-        actionColumn: createActionColumn(handleRemove) as any,
+        actionColumn: createActionColumn(handleRemove, handlePreview) as any,
         //register,
         //closeModal,
         getHelpText,

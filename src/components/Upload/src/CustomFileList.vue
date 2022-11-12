@@ -5,7 +5,7 @@
   import { useModalContext } from '/@/components/Modal/src/hooks/useModalContext';
 
   export default defineComponent({
-    name: 'FileList',
+    name: 'CustomFileList',
     props: fileListProps,
     setup(props) {
       const modalFn = useModalContext();
@@ -54,7 +54,7 @@
                       return (
                         <td class={['file-table-td', align]} key={dataIndex}>
                           {render
-                            ? customRender?.({ text: record[dataIndex], record, index })
+                            ? customRender?.({ text: record[dataIndex], record })
                             : record[dataIndex]}
                         </td>
                       );

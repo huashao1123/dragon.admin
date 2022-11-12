@@ -81,9 +81,9 @@ export const formSchema: FormSchema[] = [
   },
   {
     field: 'file',
-    label: '文件',
-    component: 'Upload',
+    label: '上传文件',
+    component: 'Input',
     slot: 'fileSlots',
-    required: true,
+    colProps: { span: 24 },
   },
 ];
