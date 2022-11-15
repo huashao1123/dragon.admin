@@ -1,5 +1,5 @@
 import type { AxiosRequestConfig, AxiosInstance, AxiosResponse, AxiosError } from 'axios';
-import type { RequestOptions, Result, UploadFileParams } from '/#/axios';
+import type { RequestOptions, Result, UploadFileParams, UploadFilesParams } from '/#/axios';
 import type { CreateAxiosOptions } from './axiosTransform';
 import axios from 'axios';
 import qs from 'qs';
@@ -156,6 +156,77 @@ export class VAxios {
     });
   }
 
+  /**
+   * @description:  Files Upload
+   */
+  uploadFiles<T = any>(config: AxiosRequestConfig, params: UploadFilesParams): Promise<T> {
+    const formData = new window.FormData();
+    const customFilename = params.name || 'file';
+
+    if (params.filename) {
+      params.file.forEach((item) => {
+        formData.append(customFilename, item, params.filename);
+      });
+    } else {
+      params.file.forEach((item) => {
+        formData.append(customFilename, item);
+      });
+    }
+
+    if (params.data) {
+      Object.keys(params.data).forEach((key) => {
+        const value = params.data![key];
+        if (Array.isArray(value)) {
+          value.forEach((item) => {
+            formData.append(`${key}[]`, item);
+          });
+          return;
+        }
+
+        formData.append(key, params.data![key]);
+      });
+    }
+    const transform = this.getTransform();
+    const { requestCatchHook, transformResponseHook } = transform || {};
+    const { requestOptions } = this.options;
+
+    const opt: RequestOptions = Object.assign({}, requestOptions);
+    return new Promise((resolve, reject) => {
+      this.axiosInstance
+        .request<any, AxiosResponse<Result>>({
+          ...config,
+          method: 'POST',
+          data: formData,
+          headers: {
+            'Content-type': ContentTypeEnum.FORM_DATA,
+            // @ts-ignore
+            ignoreCancelToken: true,
+          },
+        })
+        .then((res: AxiosResponse<Result>) => {
+          if (transformResponseHook && isFunction(transformResponseHook)) {
+            try {
+              const ret = transformResponseHook(res, opt);
+              resolve(ret);
+            } catch (err) {
+              reject(err || new Error('request error!'));
+            }
+            return;
+          }
+          resolve(res as unknown as Promise<T>);
+        })
+        .catch((e: Error | AxiosError) => {
+          if (requestCatchHook && isFunction(requestCatchHook)) {
+            reject(requestCatchHook(e, opt));
+            return;
+          }
+          if (axios.isAxiosError(e)) {
+            // rewrite error message from axios in here
+          }
+          reject(e);
+        });
+    });
+  }
   // support form-data
   supportFormData(config: AxiosRequestConfig) {
     const headers = config.headers || this.options.headers;

@@ -80,6 +80,7 @@
         openModal(true, {
           record,
           isUpdate: true,
+          maxnumber: 1,
         });
       }
       async function handleDelete(record: Recordable) {

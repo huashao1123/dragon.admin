@@ -1,14 +1,12 @@
-import { BasicColumn, TableImg } from '/@/components/Table';
+import { BasicColumn } from '/@/components/Table';
 import { FormSchema } from '/@/components/Table';
 import { h } from 'vue';
 import { Tag } from 'ant-design-vue';
-import { useGlobSetting } from '/@/hooks/setting';
 
-const { uploadUrl = '' } = useGlobSetting();
 export const columns: BasicColumn[] = [
   {
-    title: '作者',
-    dataIndex: 'provider',
+    title: '所属部门',
+    dataIndex: 'fileOwnDept',
     width: 100,
     align: 'left',
   },
@@ -26,34 +24,15 @@ export const columns: BasicColumn[] = [
     },
   },
   {
-    title: '预览',
-    width: 120,
-    customRender: ({ record }) => {
-      if (
-        record.suffix.indexOf('png') > 0 ||
-        record.suffix.indexOf('jpg') > 0 ||
-        record.suffix.indexOf('bmp') > 0
-      ) {
-        const filePath = record.url
-          ? record.url
-          : uploadUrl + '/' + record.filePath + '/' + record.id + record.suffix;
-        return h(TableImg, {
-          size: 60,
-          simpleShow: true,
-          imgList: [filePath],
-        });
-      } else return h(Tag, { color: 'orange' }, () => '无法预览');
-    },
-  },
-  {
     title: '大小KB',
     dataIndex: 'sizeKb',
     width: 100,
   },
   {
-    title: '存储标识',
-    dataIndex: 'uid',
-    width: 120,
+    title: '作者',
+    dataIndex: 'provider',
+    width: 100,
+    align: 'left',
   },
   {
     title: '创建时间',
@@ -80,7 +59,7 @@ export const formSchema: FormSchema[] = [
     colProps: { span: 24 },
   },
   {
-    field: 'file',
+    field: 'upfile',
     label: '上传文件',
     component: 'Input',
     slot: 'fileSlots',

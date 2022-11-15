@@ -6,13 +6,13 @@
     @ok="handleSubmit"
     :closeFunc="handleCloseFunc"
     width="800px"
+    :destroyOnClose="true"
   >
     <BasicForm @register="registerForm">
       <template #fileSlots>
         <CustomUpload
-          :maxNumber="20"
-          :max-size="2024"
-          :close-state="closeState"
+          :maxNumber="maxNumber"
+          :max-size="100"
           :accept="['zip', 'doc', 'docx', 'pdf', 'txt', 'xls', 'xlsx', 'image/*']"
           @change="HandleChang"
         />
@@ -26,11 +26,13 @@
   import { useMessage } from '/@/hooks/web/useMessage';
   import { BasicForm, useForm } from '/@/components/Form/index';
   import { formSchema } from './file.data';
-  import { addFile, updateFile } from '/@/api/system/file';
+  import { uploadApi } from '/@/api/system/upload';
   import { CustomUpload } from '/@/components/Upload';
   import { FileItem } from '/@/components/Upload/src/typing';
-  import { t } from '/@/hooks/web/useI18n';
-
+  import type { fileUploadParams } from './fileUpload';
+  //import CryptoJS  from 'crypto-js';
+  import { useI18n } from '/@/hooks/web/useI18n';
+  const { t } = useI18n();
   const { createMessage } = useMessage();
   export default defineComponent({
     name: 'FileModal',
@@ -44,6 +46,7 @@
         schemas: formSchema,
         showActionButtonGroup: false,
       });
+      const maxNumber = ref(5);
       const [registerModal, { setModalProps, closeModal }] = useModalInner(async (data) => {
         resetFields();
         setModalProps({ confirmLoading: false });
@@ -51,19 +54,21 @@
 
         if (unref(isUpdate)) {
           rowId = data.record.id;
+          maxNumber.value = data.maxNumber;
           setFieldsValue({
             ...data.record,
           });
         }
       });
+
       const getTitle = computed(() => (!unref(isUpdate) ? '新增文件' : '编辑文件'));
       const fileList = ref<FileItem[]>([]);
-      const closeState = ref(0); //取消列表
+      //const closeState = ref(0); //取消列表
       const isUploadingRef = ref(false);
       // 点击关闭：则所有操作不保存，包括上传的
       async function handleCloseFunc() {
         if (!isUploadingRef.value) {
-          closeState.value++;
+          //closeState.value++;
           return true;
         } else {
           createMessage.warning(t('component.upload.uploadWait'));
@@ -75,21 +80,42 @@
         fileList.value = [...(files || [])];
       }
 
+      async function UploadFile(uploadParams: fileUploadParams, files: File[]) {
+        const data = await uploadApi(
+          { data: { ...uploadParams }, file: files },
+          function onUploadProgress(progressEvent: ProgressEvent) {
+            ((progressEvent.loaded / progressEvent.total) * 100) | 0;
+            //item.percent = complete;
+          },
+        );
+        return data;
+      }
+
       async function handleSubmit() {
         try {
           const values = await validate();
           setModalProps({ confirmLoading: true });
           // TODO custom api
-          console.log(values);
-          let msg = false;
-          // if (!unref(isUpdate)) {
-          //   msg = await addFile(values);
-          // } else {
-          //   values.id = rowId;
-          //   msg = await updateFile(values);
-          // }
-          console.log(fileList.value);
-          if (msg) {
+          const files: File[] =
+            fileList.value.map((item) => {
+              return item.file;
+            }) || [];
+          let uploadParams;
+          if (!unref(isUpdate)) {
+            values.id = 0;
+            if (files.length == 0) {
+              createMessage.info('请选择文件上传');
+              return;
+            }
+          } else {
+            values.id = rowId;
+          }
+          uploadParams = values;
+          isUploadingRef.value = true;
+          const result = await UploadFile(uploadParams, files);
+          console.log(result);
+          if (result) {
+            isUploadingRef.value = false;
             createMessage.success('操作成功');
             closeModal();
             emit('success', {
@@ -106,10 +132,10 @@
         registerModal,
         registerForm,
         getTitle,
+        maxNumber,
         handleSubmit,
         HandleChang,
         handleCloseFunc,
-        closeState,
       };
     },
   });
