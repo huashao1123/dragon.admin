@@ -5,7 +5,7 @@ enum Api {
   GetDeptList = '/dept/list',
   AddDept = '/dept/add',
   UpdateDept = '/dept/update',
-  DleteDept = '/dept/delete/',
+  DleteDept = '/dept/delete',
 }
 
 export const getDeptList = (params?: deptParams) =>

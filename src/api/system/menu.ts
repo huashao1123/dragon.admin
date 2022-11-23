@@ -5,7 +5,7 @@ enum Api {
   GetMenuList = '/sysMenu/list',
   AddMenu = '/sysMenu/add',
   UpdateMenu = '/sysMenu/update',
-  DeleteMenu = '/sysMenu/delete/',
+  DeleteMenu = '/sysMenu/delete',
 }
 
 export const getMenuList = (params?: MenuParams) =>

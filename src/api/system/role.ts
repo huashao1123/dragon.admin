@@ -12,7 +12,7 @@ enum Api {
   GetRolePageList = '/sysrole/pagerolelist',
   AddRole = '/sysrole/add',
   UpdateRole = '/sysrole/update',
-  DleteRole = '/sysrole/delete/',
+  DleteRole = '/sysrole/delete',
   setRoleStatus = '/sysRole/setStatus',
   ownDeptList = '/sysRole/ownDept',
   grantRoleData = '/sysrole/grantDept',

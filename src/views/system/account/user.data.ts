@@ -65,7 +65,7 @@ export const columns: BasicColumn[] = [
         checked: record.status === 0,
         checkedChildren: '已启用',
         unCheckedChildren: '已禁用',
-        disabled: !hasPermission('sysUser:setStatus'),
+        disabled: hasPermission('sysUser:setStatus'),
         loading: record.pendingStatus,
         onChange(checked: boolean) {
           record.pendingStatus = true;

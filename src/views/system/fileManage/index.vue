@@ -2,7 +2,7 @@
   <div>
     <BasicTable @register="registerTable">
       <template #toolbar>
-        <a-button type="primary" @click="handleCreate" v-if="hasPermission('sysdept:add')"
+        <a-button type="primary" @click="handleCreate" v-if="hasPermission('sysfile:add')"
           >新增文件</a-button
         >
       </template>
@@ -11,13 +11,28 @@
           :actions="[
             {
               icon: 'clarity:note-edit-line',
-              ifShow: hasPermission('sysdept:update'),
+              ifShow: hasPermission('sysfile:update'),
               onClick: handleEdit.bind(null, record),
             },
             {
+              icon: 'ant-design:eye-outlined',
+              label: '预览',
+              ifShow: hasPermission('sysuser:grantrole'),
+              onClick: handlePreview.bind(null, record),
+            },
+          ]"
+          :dropDownActions="[
+            // {
+            //   icon: 'ant-design:database-outlined',
+            //   label: '授权数据',
+            //   ifShow: hasPermission('sysuser:grantdept'),
+            //   onClick: handleGrantData.bind(null, record),
+            // },
+            {
               icon: 'ant-design:delete-outlined',
               color: 'error',
-              ifShow: hasPermission('sysdept:delete'),
+              label: '删除',
+              ifShow: hasPermission('sysfile:delete'),
               popConfirm: {
                 title: '是否确认删除',
                 confirm: handleDelete.bind(null, record),
@@ -46,7 +61,7 @@
     setup() {
       const [registModal, { openModal }] = useModal();
       const { hasPermission } = usePermission();
-      const [registerTable, { reload, updateTableDataRecord }] = useTable({
+      const [registerTable, { reload }] = useTable({
         title: '文件列表',
         api: getFileList,
         columns,
@@ -55,7 +70,7 @@
           schemas: searchFormSchema,
         },
         rowKey: 'id',
-        pagination: false,
+        pagination: true,
         striped: false,
         useSearchForm: true,
         showTableSetting: true,
@@ -83,22 +98,26 @@
           maxnumber: 1,
         });
       }
+      function handlePreview(record: Recordable) {
+        console.log(record);
+      }
       async function handleDelete(record: Recordable) {
         //console.log(record);
         const id = record.id;
-        //console.log(id);
+        console.log(id);
         const msg = await deleteFile(id);
         if (msg) {
           createMessage.success('删除成功');
           reload();
         }
       }
-      function handleSuccess({ isUpdate, values }) {
-        if (isUpdate) {
-          updateTableDataRecord(values.id, values);
-        } else {
-          reload();
-        }
+      function handleSuccess() {
+        // if (isUpdate) {
+        //   updateTableDataRecord(values.id, values);
+        // } else {
+        //   reload();
+        // }
+        reload();
       }
       return {
         registerTable,
@@ -108,6 +127,7 @@
         handleSuccess,
         registModal,
         hasPermission,
+        handlePreview,
       };
     },
   });

@@ -4,7 +4,7 @@ enum Api {
   GetUserPageList = '/sysuser/pagelist',
   AddUser = '/sysuser/add',
   UpdateUser = '/sysuser/update',
-  DeleteUser = '/sysuser/delete/',
+  DeleteUser = '/sysuser/delete',
   grantUserRole = '/sysuser/grantrole',
   grantUserData = '/sysuser/grantdept',
   ownRoleList = '/sysuser/ownrolelist',

@@ -4,7 +4,7 @@
     <BasicTable @register="registerTable" class="w-3/4 xl:w-4/5" :searchInfo="searchInfo">
       <template #toolbar>
         <!-- :disabled="!hasPermission('sysUser:add')" -->
-        <a-button type="primary" @click="handleCreate" v-if="!hasPermission('sysuser:add')"
+        <a-button type="primary" @click="handleCreate" v-if="hasPermission('sysuser:add')"
           >新增账号</a-button
         >
       </template>
@@ -18,7 +18,7 @@
               icon: 'clarity:note-edit-line',
               label: '编辑',
               tooltip: '编辑账号',
-              ifShow: !hasPermission('sysuser:update'),
+              ifShow: hasPermission('sysuser:update'),
               onClick: handleEdit.bind(null, record),
             },
           ]"
@@ -26,13 +26,13 @@
             {
               icon: 'ant-design:menu-outlined',
               label: '授权角色',
-              ifShow: !hasPermission('sysuser:grantrole'),
+              ifShow: hasPermission('sysuser:grantrole'),
               onClick: handleGrantRole.bind(null, record),
             },
             {
               icon: 'ant-design:database-outlined',
               label: '授权数据',
-              ifShow: !hasPermission('sysuser:grantdept'),
+              ifShow: hasPermission('sysuser:grantdept'),
               onClick: handleGrantData.bind(null, record),
             },
             // {

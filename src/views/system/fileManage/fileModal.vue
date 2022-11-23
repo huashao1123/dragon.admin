@@ -118,10 +118,11 @@
             isUploadingRef.value = false;
             createMessage.success('操作成功');
             closeModal();
-            emit('success', {
-              isUpdate: unref(isUpdate),
-              values: { ...values, id: rowId },
-            });
+            // emit('success', {
+            //   isUpdate: unref(isUpdate),
+            //   values: { ...values, id: rowId },
+            // });
+            emit('success');
           }
         } finally {
           setModalProps({ confirmLoading: false });
