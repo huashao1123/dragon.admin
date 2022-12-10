@@ -4,6 +4,7 @@ enum Api {
   addFile = '/sysfile/add',
   updateFile = '/sysfile/update',
   deleteFile = '/sysfile/delete',
+  downLoadFile = '/sysfile/download',
 }
 import { userPageParams } from './model/fileModel';
 
@@ -15,3 +16,9 @@ export const addFile = (params?: any) => defHttp.post<any>({ url: Api.addFile, p
 export const updateFile = (params?: any) => defHttp.put<any>({ url: Api.updateFile, params });
 
 export const deleteFile = (params?: number) => defHttp.delete<any>({ url: Api.deleteFile, params });
+
+export const downLoadFile = (params?: any) =>
+  defHttp.post<Blob>(
+    { url: Api.downLoadFile, params, responseType: 'blob' },
+    { isTransformResponse: false },
+  );

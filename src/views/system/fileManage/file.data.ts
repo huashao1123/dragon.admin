@@ -39,7 +39,7 @@ export const columns: BasicColumn[] = [
   {
     title: '文件等级',
     dataIndex: 'fileLevel',
-    width: 200,
+    width: 100,
     customRender: ({ record }) => {
       const dataScope = record.fileLevel;
       switch (dataScope) {
@@ -58,13 +58,13 @@ export const columns: BasicColumn[] = [
   {
     title: '作者',
     dataIndex: 'updateName',
-    width: 100,
+    width: 50,
     align: 'left',
   },
   {
     title: '时间',
     dataIndex: 'updateTime',
-    width: 180,
+    width: 150,
   },
 ];
 

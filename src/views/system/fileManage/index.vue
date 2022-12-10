@@ -17,17 +17,23 @@
             {
               icon: 'ant-design:eye-outlined',
               label: '预览',
-              ifShow: hasPermission('sysuser:grantrole'),
+              ifShow: hasPermission('sysuser:preview'),
               onClick: handlePreview.bind(null, record),
             },
           ]"
           :dropDownActions="[
-            // {
-            //   icon: 'ant-design:database-outlined',
-            //   label: '授权数据',
-            //   ifShow: hasPermission('sysuser:grantdept'),
-            //   onClick: handleGrantData.bind(null, record),
-            // },
+            {
+              icon: 'ant-design:arrow-down-outlined',
+              label: '下载',
+              ifShow: hasPermission('sysfile:download'),
+              onClick: handleDownload.bind(null, record),
+            },
+            {
+              icon: 'ant-design:printer-filled',
+              label: '打印',
+              ifShow: hasPermission('sysfile:download'),
+              onClick: handlePrint.bind(null, record),
+            },
             {
               icon: 'ant-design:delete-outlined',
               color: 'error',
@@ -43,7 +49,8 @@
       </template>
     </BasicTable>
     <FileModal @register="registModal" @success="handleSuccess" />
-  </div>
+    <PreviewModal @register="register1"
+  /></div>
 </template>
 <script lang="ts">
   import { defineComponent } from 'vue';
@@ -54,12 +61,18 @@
   import { useModal } from '/@/components/Modal';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { usePermission } from '/@/hooks/web/usePermission';
+  import PreviewModal from './previewFileModal.vue';
+  import { downLoadFile } from '/@/api/system/file';
+  //import { printByData } from '/@/utils/file/print';
+  import { downloadByData } from '/@/utils/file/download';
+  import printJS from 'print-js';
   const { createMessage } = useMessage();
   export default defineComponent({
     name: 'FileManagement',
-    components: { BasicTable, TableAction, FileModal },
+    components: { BasicTable, TableAction, FileModal, PreviewModal },
     setup() {
       const [registModal, { openModal }] = useModal();
+      const [register1, { openModal: openModal1 }] = useModal();
       const { hasPermission } = usePermission();
       const [registerTable, { reload }] = useTable({
         title: '文件列表',
@@ -91,15 +104,24 @@
         });
       }
       function handleEdit(record: Recordable) {
-        console.log(record);
         openModal(true, {
           record,
           isUpdate: true,
           maxnumber: 1,
         });
       }
-      function handlePreview(record: Recordable) {
-        console.log(record);
+      async function handlePreview(record: Recordable) {
+        const id = record.id;
+        if (record.suffix.indexOf('pdf') < 0) {
+          createMessage.error('目前只支持pdf文件预览,可以先下载再预览');
+          return;
+        }
+        const file = await downLoadFile(id);
+        const blob = new Blob([file], { type: 'application/pdf' });
+        record.url = window.URL.createObjectURL(blob);
+        openModal1(true, {
+          record,
+        });
       }
       async function handleDelete(record: Recordable) {
         //console.log(record);
@@ -111,6 +133,26 @@
           reload();
         }
       }
+
+      async function handleDownload(record: Recordable) {
+        const id = record.id;
+        const file = await downLoadFile(id);
+        const fileName = record.fileName;
+        downloadByData(file, fileName);
+      }
+
+      async function handlePrint(record: Recordable) {
+        if (record.suffix.indexOf('pdf') < 0) {
+          createMessage.error('目前只支持pdf文件打印,可以先下载再打印');
+          return;
+        }
+        const id = record.id;
+        const file = await downLoadFile(id);
+        const blob = new Blob([file], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+        printJS({ printable: url, type: 'pdf' });
+      }
+
       function handleSuccess() {
         // if (isUpdate) {
         //   updateTableDataRecord(values.id, values);
@@ -128,6 +170,9 @@
         registModal,
         hasPermission,
         handlePreview,
+        register1,
+        handleDownload,
+        handlePrint,
       };
     },
   });
